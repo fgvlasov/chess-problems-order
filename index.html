@@ -9,12 +9,25 @@
         <div id="board" style="width:436px;height:0;padding-bottom:436px; opacity: 1;"></div>
         <br>
         <input type="button" id="hint-btn" value="Подсказка" />
-        <input type="button" id="next-btn" style="display:none" value="Следующая" />
-        </center>
+        <input 
+            id="problem-input" 
+            type="text" 
+            
+            placeholder="№ задачи до 4462" 
+            style="width: 100px; padding: 4px; margin-right: 8px;"
+        />
+
+        <!-- Кнопки -->
+        <button id="next-btn" style="padding: 4px 10px; margin-right: 6px;">Вперёд ▶</button>
+        <button id="random-btn" style="padding: 4px 10px;">🎲 Случайно</button>        </center>
         <center>
         <p style="font-family:Helvetica">
             Это задача <strong><span id="problem-num"></span></strong> из книги <a href="https://ausee.wordpress.com/wp-content/uploads/2016/06/23.pdf" target="_blank">Polgár's</a>. Можно сохранить себе <a id="problem-link" target="_self">ссылку</a> на задачу.
             
+        </p>
+        <p style="font-family:Helvetica">Мат в 1 ход: задачи с 1 по 306<br>
+            Мат в 2 хода: задачи с 307 по 3718<br>
+            Мат в 3 хода: задачи с 3719 по 4462
         </p>
          <p style="font-family:Helvetica">
             Шахматный кружок по пятницам в 17 - Palstatie 3 Lounge.

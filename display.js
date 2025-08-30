@@ -29,80 +29,109 @@ function highlight(square) {
 }
 
 function parse_move(move) {
-  let [source, target] = move.split("-");
-  let promotion = target.length === 2 ? "q" : target[2];
+  var parts = move.split("-");
+  var source = parts[0];
+  var target = parts[1];
+  var promotion = target.length === 2 ? "q" : target[2];
   target = target.slice(0, 2);
-  return { source, target, promotion };
+  return { source: source, target: target, promotion: promotion };
 }
 
 var game;
 var correct_moves;
 
-function make_move() {
-  const { source, target, promotion } = parse_move(correct_moves[0]);
-  game.move({ from: source, to: target, promotion });
-  board.move(`${source}-${target}`);
-  correct_moves.shift();
-}
-
-function next_problem() {
-  change_problem(1);
-}
-
-function previous_problem() {
-  change_problem(-1);
-}
-
-function change_problem(direction) {
-  const current_problem_id = parseInt(document.querySelector("#problem-num").innerHTML);
-  if ("o" in url_parameters && current_problem_id !== (direction === 1 ? TOTAL_PROBLEMS : 1)) {
-    const nextProblem = problems[current_problem_id - 1 + direction];
-    next(nextProblem);
-    pushState(nextProblem.problemid);
-  } else if (direction === 1) {
-    next();
-    if (window.history && window.history.replaceState && "id" in url_parameters) {
-      delete url_parameters["id"];
-      window.history.replaceState(url_parameters, "", new URI(window.location.href).search(url_parameters).toString());
-    }
-  }
+// ===== Helpers for problem navigation =====
+function clampProblemId(n) {
+  if (isNaN(n)) return null;
+  if (n < 1) return 1;
+  if (n > TOTAL_PROBLEMS) return TOTAL_PROBLEMS;
+  return n;
 }
 
 function pushState(problemId) {
-  if (window.history && window.history.pushState && "o" in url_parameters) {
+  if (window.history && window.history.pushState && ("o" in url_parameters)) {
     url_parameters["id"] = problemId;
-    if (window.history.state && window.history.state["id"] === problemId) {
-      return;
-    }
+    if (window.history.state && window.history.state["id"] === problemId) return;
     window.history.pushState(url_parameters, "", new URI(window.location.href).search(url_parameters).toString());
   }
 }
 
-document.body.onkeydown = function(e) {
-  e.preventDefault();
+// Вернуть фактический загруженный id или false
+function loadProblemById(problemId, useAnimation) {
+  if (typeof useAnimation === "undefined") useAnimation = true;
+  var id = clampProblemId(parseInt(problemId, 10));
+  if (!id) return false;
+  var p = problems[id - 1];
+  if (!p) return false;
+  next(p, useAnimation);
+  pushState(p.problemid);
+  return p.problemid;
+}
 
-  // If the game is in checkmate and space is pressed, go to the next problem.
-  if (game.in_checkmate() && (e.key === " " || e.code === "Space")) {
-    next_problem();
-    return;
+// Будем помнить текущий id
+var currentProblemId = null;
+
+// Обновляем значение инпута (ставим следующий номер)
+function updateProblemInput(nextFromId) {
+  var input = document.querySelector("#problem-input");
+  if (!input) return;
+  var base = (typeof nextFromId === "number") ? nextFromId : currentProblemId;
+  if (!base) return;
+  input.value = String(clampProblemId(base + 1));
+}
+
+// ===== Moves playback =====
+function make_move() {
+  var parsed = parse_move(correct_moves[0]);
+  game.move({ from: parsed.source, to: parsed.target, promotion: parsed.promotion });
+  board.move(parsed.source + "-" + parsed.target);
+  correct_moves.shift();
+}
+
+// ===== Core UI actions =====
+function next(problem, useAnimation) {
+  if (typeof problem === "undefined") problem = random.choice(problems);
+  if (typeof useAnimation === "undefined") useAnimation = true;
+
+  //$("#next-btn").css("display", "none");
+  $("#hint-btn").css("display", "");
+
+  var problem_type = problem.type;
+  var problem_title = problem_type + " - " + problem.first;
+
+  document.title = "#" + problem.problemid;
+  if ("o" in url_parameters) problem_title = "#" + problem.problemid + " " + problem_title;
+
+  var titleEl = document.querySelector("#problem-title");
+  if (titleEl) titleEl.innerHTML = problem_title;
+
+  var numEl = document.querySelector("#problem-num");
+  if (numEl) numEl.innerHTML = String(problem.problemid);
+
+  var linkEl = document.querySelector("#problem-link");
+  if (linkEl) {
+    linkEl.href = ("o" in url_parameters) ? ("?o&id=" + problem.problemid) : ("?id=" + problem.problemid);
   }
 
-  if (e.key === " " || e.code === "Space") {
-    const { source, target } = parse_move(correct_moves[0]);
-    highlight(source);
-    highlight(target);
-  } else {
-    unhighlight();
+  game = new Chess(problem.fen);
+  board.position(problem.fen, useAnimation);
+  correct_moves = problem.moves.split(";");
+
+  var boardEl = document.querySelector("#board");
+  if (boardEl) boardEl.style.opacity = "1";
+
+  var hintBtn = document.querySelector("#hint-btn");
+  if (hintBtn) {
+    hintBtn.onclick = function() {
+      var m = parse_move(correct_moves[0]);
+      highlight(m.source);
+      highlight(m.target);
+    };
   }
 
-  if (e.code === "ArrowRight") {
-    next_problem();
-  }
-
-  if (e.code === "ArrowLeft") {
-    previous_problem();
-  }
-};
+  // обновим инпут на следующий номер
+  updateProblemInput(problem.problemid);
+}
 
 function onDropHandler(src, tgt) {
   enableScroll();
@@ -111,23 +140,23 @@ function onDropHandler(src, tgt) {
     return "snapback";
   }
 
-  const { source, target, promotion } = parse_move(correct_moves[0]);
+  var first = parse_move(correct_moves[0]);
 
   if (correct_moves.length === 1) {
-    const sim_game = new Chess(game.fen());
-    sim_game.move({ from: src, to: tgt, promotion });
+    var sim_game = new Chess(game.fen());
+    sim_game.move({ from: src, to: tgt, promotion: first.promotion });
 
     if (!sim_game.in_checkmate()) {
       return "snapback";
     } else {
-      game.move({ from: src, to: tgt, promotion });
+      game.move({ from: src, to: tgt, promotion: first.promotion });
       correct_moves.shift();
     }
   } else {
-    if (src !== source || tgt !== target) {
+    if (src !== first.source || tgt !== first.target) {
       return "snapback";
     }
-    game.move({ from: source, to: target, promotion });
+    game.move({ from: first.source, to: first.target, promotion: first.promotion });
     correct_moves.shift();
     setTimeout(make_move, 500);
   }
@@ -136,57 +165,145 @@ function onDropHandler(src, tgt) {
     $("#hint-btn").css("display", "none");
     $("#next-btn").css("display", "");
 
-    document.querySelector("#next-btn").onclick = next_problem;
-    document.querySelector("#problem-title").innerHTML = document.querySelector("#problem-title").innerHTML.split("-")[0] + " - Решено!";
-    document.querySelector("#board").style.opacity = "0.5";
+    var nextBtn = document.querySelector("#next-btn");
+    if (nextBtn) nextBtn.onclick = next_problem;
+
+    var pt = document.querySelector("#problem-title");
+    if (pt) pt.innerHTML = pt.innerHTML.split("-")[0] + " - Решено!";
+
+    var boardEl2 = document.querySelector("#board");
+    if (boardEl2) boardEl2.style.opacity = "0.5";
   }
 }
 
-const board = ChessBoard("board", {
+var board = ChessBoard("board", {
   draggable: true,
   dropOffBoard: "snapback",
-  onDragStart: () => disableScroll(),
+  onDragStart: function() { disableScroll(); },
   onDrop: onDropHandler,
-  onMoveEnd: () => board.position(game.fen()),
-  onSnapEnd: () => { board.position(game.fen()); unhighlight(); }
+  onMoveEnd: function() { board.position(game.fen()); },
+  onSnapEnd: function() { board.position(game.fen()); unhighlight(); }
 });
 
-function next(problem = random.choice(problems), useAnimation = true) {
-  $("#next-btn").css("display", "none");
-  $("#hint-btn").css("display", "");
-  //const problem_type = `Checkm${problem.type.slice(1)} Move${problem.type.endsWith("One") ? "" : "s"}`;
-  const problem_type = problem.type;
-  var problem_title = `${problem_type} - ${problem.first}`;
-  document.title = `#${problem.problemid}`;
-  if ("o" in url_parameters) { problem_title = `#${problem.problemid} ${problem_title}`;}
-  document.querySelector("#problem-title").innerHTML = problem_title;
-  document.querySelector("#problem-num").innerHTML = `${problem.problemid}`;
-  document.querySelector("#problem-link").href = "o" in url_parameters ? `?o&id=${problem.problemid}` : `?id=${problem.problemid}`;
-  game = new Chess(problem.fen);
-  board.position(problem.fen, useAnimation);
-  correct_moves = problem.moves.split(";");
-  document.querySelector("#board").style.opacity = "1";
-  document.querySelector("#hint-btn").onclick = function() {
-    const { source, target } = parse_move(correct_moves[0]);
-    highlight(source);
-    highlight(target);
-  };
+// ===== Navigation API (Следующая / Случайно / Ручной ввод) =====
+function next_problem() {
+  // если не знаем currentProblemId — попробуем взять из DOM
+  if (currentProblemId === null) {
+    var numEl = document.querySelector("#problem-num");
+    if (numEl) {
+      var fromDom = parseInt(numEl.innerHTML, 10);
+      if (!isNaN(fromDom)) currentProblemId = clampProblemId(fromDom);
+    }
+  }
+  var nextId = clampProblemId((currentProblemId || 1) + 1);
+  var loadedId = loadProblemById(nextId, true);
+  if (loadedId) {
+    currentProblemId = loadedId;
+    updateProblemInput(currentProblemId);
+  }
 }
 
-function init() {
-  const problem = ("id" in url_parameters && url_parameters["id"] <= TOTAL_PROBLEMS && url_parameters["id"] > 0) ? problems[url_parameters["id"] - 1] : random.choice(problems);
-  next(problem);
-  pushState(problem.problemid);
+function random_problem() {
+  var p = random.choice(problems);
+  next(p, true);
+  pushState(p.problemid);
+  currentProblemId = p.problemid;
+  updateProblemInput(currentProblemId);
 }
 
-window.onpopstate = function(event) {
-  if (event.state && "id" in event.state) {
-    const problemId = event.state["id"];
-    next(problems[problemId - 1], false);
+function jump_to_input() {
+  var input = document.querySelector("#problem-input");
+  if (!input) return;
+  var val = input.value;
+  if (!val || String(val).trim() === "") return;
+  var loadedId = loadProblemById(val, true);
+  if (loadedId) {
+    currentProblemId = loadedId;
+    updateProblemInput(currentProblemId);
+  }
+}
+
+// ===== Keyboard shortcuts (НЕ мешаем вводу в инпут) =====
+document.body.onkeydown = function(e) {
+  var tag = (e && e.target && e.target.tagName) ? String(e.target.tagName).toUpperCase() : "";
+  var isEditable = (e && e.target) ? !!e.target.isContentEditable : false;
+
+  // если фокус в input/textarea/редакторе — не перехватываем
+  if (tag === "INPUT" || tag === "TEXTAREA" || isEditable) {
+    return;
+  }
+
+  // Пробел на решенной — следующая
+  if (game && game.in_checkmate && game.in_checkmate() && (e.key === " " || e.code === "Space")) {
+    e.preventDefault();
+    next_problem();
+    return;
+  }
+
+  if (e.key === " " || e.code === "Space") {
+    e.preventDefault();
+    var pm = parse_move(correct_moves[0]);
+    highlight(pm.source);
+    highlight(pm.target);
+  } else {
+    unhighlight();
+  }
+
+  if (e.code === "ArrowRight") {
+    e.preventDefault();
+    next_problem();
+  }
+  if (e.code === "KeyR") {
+    e.preventDefault();
+    random_problem();
   }
 };
 
+// ===== History pop =====
+window.onpopstate = function(event) {
+  if (event && event.state && ("id" in event.state)) {
+    var problemId = event.state["id"];
+    next(problems[problemId - 1], false);
+    currentProblemId = problemId;
+    updateProblemInput(currentProblemId);
+  }
+};
+
+// ===== Init =====
+function init() {
+  var problem;
+  if (("id" in url_parameters) && url_parameters["id"] <= TOTAL_PROBLEMS && url_parameters["id"] > 0) {
+    problem = problems[url_parameters["id"] - 1];
+  } else {
+    problem = random.choice(problems);
+  }
+
+  next(problem);
+  pushState(problem.problemid);
+  currentProblemId = problem.problemid;
+
+  // кнопки
+  var nextBtn = document.querySelector("#next-btn");
+  if (nextBtn) nextBtn.onclick = next_problem;
+
+  var randomBtn = document.querySelector("#random-btn");
+  if (randomBtn) randomBtn.onclick = random_problem;
+
+  // инпут: Enter = прыгнуть к номеру
+  var input = document.querySelector("#problem-input");
+  if (input) {
+    input.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        jump_to_input();
+      }
+    });
+  }
+
+  updateProblemInput(currentProblemId);
+}
+
 // Exports
 module.exports = {
-  init
+  init: init
 };
