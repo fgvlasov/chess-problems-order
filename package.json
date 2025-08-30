@@ -1,0 +1,34 @@
+{
+  "name": "chess-puzzle-player",
+  "version": "1.0.0",
+  "description": "Improve your game!",
+  "scripts": {
+    "start": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/denialromeo/3412-chess-problems.git"
+  },
+  "author": "Daniel Moore",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/denialromeo/3412-chess-problems/issues"
+  },
+  "homepage": "https://github.com/denialromeo/3412-chess-problems#readme",
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "chess.js": "^0.10.2",
+    "jquery": "^3.3.1",
+    "urijs": "^1.19.1",
+    "webpack": "^4.16.5"
+  },
+  "devDependencies": {
+    "css-loader": "^1.0.0",
+    "style-loader": "^0.23.1",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.10"
+  }
+}
