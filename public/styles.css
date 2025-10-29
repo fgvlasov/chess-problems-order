@@ -1,0 +1,127 @@
+
+      :root {
+        --max-width: 640px;
+        --gap: 12px;
+        --radius: 12px;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: Helvetica, Arial, sans-serif;
+        line-height: 1.45;
+        color: #111;
+        background: #f7f7f8;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .container {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 16px clamp(12px, 3vw, 20px) 28px;
+      }
+
+      header { text-align: center; margin-bottom: 12px; }
+      h2#problem-title { margin: 0 0 8px; font-weight: 700; }
+
+      .board-wrap {
+        display: grid;
+        place-items: center;
+        margin: 8px 0 12px;
+      }
+
+      /* Доска — всегда квадрат, но не шире 436px */
+      #board {
+        width: min(100%, 436px);
+        aspect-ratio: 1 / 1;
+        opacity: 1;
+        border-radius: var(--radius);
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(0,0,0,.04);
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: var(--gap);
+        margin: 12px 0 4px;
+      }
+
+      .controls input[type="text"],
+      .controls input[type="number"] {
+        width: 140px;
+        padding: 10px 12px;
+        border: 1px solid #d7d7db;
+        border-radius: 10px;
+        background: #fff;
+        font-size: 16px; /* избегаем зума на iOS */
+      }
+
+      .btn {
+        padding: 10px 14px;
+        border: 1px solid #d7d7db;
+        border-radius: 10px;
+        background: #fff;
+        cursor: pointer;
+        font-size: 16px;
+        transition: transform .02s ease, background .15s ease, border-color .15s ease;
+        touch-action: manipulation;
+      }
+      .btn:active { transform: translateY(1px); }
+      .btn-primary {
+        background: #111827;
+        color: #fff;
+        border-color: #111827;
+      }
+
+      .info {
+        text-align: center;
+        margin-top: 14px;
+        color: #222;
+      }
+      .info p { margin: 8px 0; }
+
+      .card {
+        background: #fff;
+        border: 1px solid #e6e6ea;
+        border-radius: var(--radius);
+        padding: 12px 14px;
+        display: inline-block;
+        text-align: left;
+      }
+
+      a { color: #2563eb; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      /* Мобильные улучшения */
+      @media (max-width: 560px) {
+        h2#problem-title { font-size: 18px; }
+        .controls {
+          justify-content: stretch;
+        }
+        .controls > * {
+          flex: 1 1 100%;
+        }
+        .controls input {
+          width: 100%;
+        }
+        .btn,
+        .btn-primary {
+          width: 100%;
+        }
+        .card { width: 100%; }
+      }
+
+      /* Темная тема по системным настройкам */
+      @media (prefers-color-scheme: dark) {
+        body { background: #0b0b0c; color: #eaeaea; }
+        #board, .card, .controls input { background: #151517; border-color: #2a2a2e; color: #eaeaea; }
+        .btn { background: #1b1b1f; border-color: #2a2a2e; color: #eaeaea; }
+        .btn-primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+        a { color: #8ab4ff; }
+      }
+    
