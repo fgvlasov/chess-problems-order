@@ -99,7 +99,7 @@ function next(problem, useAnimation) {
   var problem_type = problem.type;
   var problem_title = problem_type + " - " + problem.first;
 
-  document.title = "Шахматная задача #" + problem.problemid;
+  document.title = "Shakkitehtävä #" + problem.problemid;
   if ("o" in url_parameters) problem_title = "#" + problem.problemid + " " + problem_title;
 
   var titleEl = document.querySelector("#problem-title");
