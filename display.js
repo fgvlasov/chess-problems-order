@@ -269,6 +269,24 @@ window.onpopstate = function(event) {
   }
 };
 
+// ===== Reload on window resize (but skip on initial load) =====
+let initialWidth = window.innerWidth;
+let resizeTimeout;
+
+window.addEventListener("resize", function () {
+  // ignore small height changes
+  const newWidth = window.innerWidth;
+  if (Math.abs(newWidth - initialWidth) < 40) return; 
+
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    // reload if real width change
+    if (newWidth !== initialWidth) {
+      location.reload();
+    }
+  }, 300);
+});
+
 // ===== Init =====
 function init() {
   var problem;
