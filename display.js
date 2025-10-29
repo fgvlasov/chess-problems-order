@@ -169,7 +169,7 @@ function onDropHandler(src, tgt) {
     if (nextBtn) nextBtn.onclick = next_problem;
 
     var pt = document.querySelector("#problem-title");
-    if (pt) pt.innerHTML = pt.innerHTML.split("-")[0] + " - Решено!";
+    if (pt) pt.innerHTML = pt.innerHTML.split("-")[0] + " - Se on päätetty!";
 
     var boardEl2 = document.querySelector("#board");
     if (boardEl2) boardEl2.style.opacity = "0.5";
