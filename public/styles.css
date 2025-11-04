@@ -18,7 +18,7 @@ body {
       }
 
       .container {
-        max-width: var(--max-width);
+        
         margin: 0 auto;
         padding: 16px clamp(12px, 3vw, 20px) 28px;
       }
@@ -79,6 +79,8 @@ body {
       }
 
       .info {
+        max-width: var(--max-width);
+        margin: 12px auto 0; 
         text-align: center;
         margin-top: 14px;
         color: #222;
@@ -97,7 +99,7 @@ body {
       a { color: #2563eb; text-decoration: none; }
       a:hover { text-decoration: underline; }
 
-      /* Мобильные улучшения */
+      
       @media (max-width: 560px) {
         h2#problem-title { font-size: 18px; }
         .controls {
@@ -124,8 +126,9 @@ body {
         .btn-primary { background: #2563eb; border-color: #2563eb; color: #fff; }
         a { color: #8ab4ff; }
       }
+
 .gallery { 
-  max-width: var(--max-width); 
+  max-width: 1000px; 
   margin: 12px auto 0; 
   padding: 0 4px; 
 }

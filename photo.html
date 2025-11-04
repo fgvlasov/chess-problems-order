@@ -6,78 +6,50 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <title>Shakkipalapeli - Photo</title>
+    <title>Shakkiseura,  Photo - "Palstatie 3", Jyväskylä</title>
     <link rel="stylesheet" href="public/styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.3.1/css/glightbox.min.css" />
+
   </head>
   <body>
     <div class="container">
       <header>
-        <h2 >Kuvagalleria</h2>
+        <h2>Shakkiseura - "Palstatie 3", Jyväskylä</h2>
       </header>
 
       <section class="info">
-        <p class="card">
-          Tämä on tehtävä <strong><span id="problem-num"></span></strong> kirjasta
-          <a href="https://ausee.wordpress.com/wp-content/uploads/2016/06/23.pdf" target="_blank" rel="noopener noreferrer">Polgár</a>.
-          Voit tallentaa itsellesi <a id="problem-link" target="_self">linkin</a> tehtävään.
-        </p>
-
-        <p class="card" style="margin-top: 10px;">
-          Matti 1 siirrossa: tehtävät 1–306<br />
-          Matti 2 siirrossa: tehtävät 307–3718<br />
-          Matti 3 siirrossa: tehtävät 3719–4462<br />
-          Alkaen tehtävästä 4139 – Mustien siirto<br />
-          Tehtävät on järjestetty vaikeusasteen mukaan.
-        </p>
-
+       
         <p class="card" style="margin-top: 10px;">
           Shakkikerho perjantaisin klo 17 – Palstatie 3 Lounge.
         </p>
+
+        <div style="text-align:center; margin:12px 0 20px;">
+          <a href="index.html" class="btn">← Takaisin tehtäviin</a>
+        </div>
       </section>
 
 
-      <section class="gallery">
-        
-
-        <!-- Обёртка: основное фото + стрелки -->
-        <div class="gallery-main" aria-label="Kuvagalleria pääkuva">
-            <button class="nav btn-prev" aria-label="Edellinen kuva">‹</button>
-
-            <!-- Кликабельное большое фото открывает лайтбокс -->
-            <a class="glightbox main-link" href="public/img/01-large.jpg" data-gallery="board" data-title="Kuva 1">
-            <img id="main-image" src="public/img/01-large.jpg" alt="Galleria kuva 1" />
-            </a>
-
-            <button class="nav btn-next" aria-label="Seuraava kuva">›</button>
-        </div>
-
-        <!-- Полоса превью (flex, прокрутка) -->
-        <div class="thumbs" role="list" aria-label="Esikatselukuvat">
-            <!-- Каждой миниатюре задаём data-large для большого изображения -->
-            <button class="thumb is-active" role="listitem" aria-label="Kuva 1"
-                    data-large="public/img/01-large.jpg" data-title="Kuva 1"
-                    data-lightbox="public/img/01-large.jpg">
-            <img src="public/img/01-thumb.jpg" alt="Pikkukuva 1" />
-            </button>
-
-            <button class="thumb" role="listitem" aria-label="Kuva 2"
-                    data-large="public/img/02-large.jpg" data-title="Kuva 2"
-                    data-lightbox="public/img/02-large.jpg">
-            <img src="public/img/02-thumb.jpg" alt="Pikkukuva 2" />
-            </button>
-
-            <button class="thumb" role="listitem" aria-label="Kuva 3"
-                    data-large="public/img/03-large.jpg" data-title="Kuva 3"
-                    data-lightbox="public/img/03-large.jpg">
-            <img src="public/img/03-thumb.jpg" alt="Pikkukuva 3" />
-            </button>
-
-        
-        </div>
-        </section>
-
+    <section class="gallery" 
+        data-start="1" 
+        data-end="11" 
+        data-base="public/img" 
+        data-pattern="##-large" 
+        data-thumbpattern="##-large-thumb">
+    
+    <div class="gallery-main" aria-label="Kuvagalleria pääkuva">
+        <button class="nav btn-prev" aria-label="Edellinen kuva">‹</button>
+        <a class="glightbox main-link" href="#" data-gallery="board"><img id="main-image" alt="" /></a>
+        <button class="nav btn-next" aria-label="Seuraava kuva">›</button>
     </div>
 
-    <script src="dist/chess-puzzle-player.js"></script>
+    <div class="thumbs" role="list" aria-label="Esikatselukuvat"></div>
+
+    <div id="gallery-counter" style="text-align:center;margin-top:6px;font-size:14px;opacity:.7;"></div>
+    </section>
+
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.3.1/js/glightbox.min.js"></script>
+    <script src="public/photos.js"></script>
   </body>
 </html>
