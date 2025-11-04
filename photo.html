@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fi">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Shakkiseura,  Photo - "Palstatie 3", Jyväskylä</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.3.1/css/glightbox.min.css" />
+
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h2>Shakkiseura - "Palstatie 3", Jyväskylä</h2>
+      </header>
+
+      <section class="info">
+       
+        <p class="card" style="margin-top: 10px;">
+          Shakkikerho perjantaisin klo 17 – Palstatie 3 Lounge.
+        </p>
+
+        <div style="text-align:center; margin:12px 0 20px;">
+          <a href="index.html" class="btn">← Takaisin tehtäviin</a>
+        </div>
+      </section>
+
+
+    <section class="gallery" 
+        data-start="1" 
+        data-end="11" 
+        data-base="public/img" 
+        data-pattern="##-large" 
+        data-thumbpattern="##-large-thumb">
+    
+    <div class="gallery-main" aria-label="Kuvagalleria pääkuva">
+        <button class="nav btn-prev" aria-label="Edellinen kuva">‹</button>
+        <a class="glightbox main-link" href="#" data-gallery="board"><img id="main-image" alt="" /></a>
+        <button class="nav btn-next" aria-label="Seuraava kuva">›</button>
+    </div>
+
+    <div class="thumbs" role="list" aria-label="Esikatselukuvat"></div>
+
+    <div id="gallery-counter" style="text-align:center;margin-top:6px;font-size:14px;opacity:.7;"></div>
+    </section>
+
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.3.1/js/glightbox.min.js"></script>
+    <script src="public/photos.js"></script>
+  </body>
+</html>
